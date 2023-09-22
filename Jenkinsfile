@@ -7,7 +7,7 @@ pipeline {
         STACK_NAME = 'SecretsTestStack'
         AWS_DEFAULT_REGION = 'us-east-1'
         S3_BUCKET_NAME = 'artifacbucket'
-        SECRET_NAME = 'MyDBCredentials'
+        SECRET_USERNAME = 'AdminTest'
     }
     stages {
         stage('Checkout') {
@@ -52,7 +52,7 @@ pipeline {
                     aws cloudformation create-stack \
                         --stack-name $STACK_NAME \
                         --template-body file://cloudformation/lambda-secret-srv.yaml \
-                        --parameters ParameterKey=SecretName,ParameterValue=$SECRET_NAME \
+                        --parameters ParameterKey=SecretUsername,ParameterValue=$SECRET_USERNAME \
                         --region $AWS_DEFAULT_REGION \
                         --capabilities CAPABILITY_IAM
                     """
