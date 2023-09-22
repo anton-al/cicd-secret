@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    tools {
+        jdk 'OracleJDK11'
+    }
     environment {
         AWS_DEFAULT_REGION = 'us-east-1'
         S3_BUCKET_NAME = 'artifacbucket'
