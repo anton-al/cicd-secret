@@ -24,7 +24,7 @@ pipeline {
         stage('Deploy to S3') {
             steps {
                 script {
-                    def fileName = sh(script: 'ls target/*.jar', returnStdout: true).trim()
+                    def fileName = sh(script: 'ls target/cicd-secret-1.0-SNAPSHOT.jar', returnStdout: true).trim()
                     sh "aws s3 cp $fileName s3://$S3_BUCKET_NAME/secrets-lambda.jar"
                 }
             }
