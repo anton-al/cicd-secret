@@ -29,33 +29,31 @@ pipeline {
                 }
             }
         }
-        stage('Delete Existing Stack') {
-            steps {
-                script {
-
-                    def stackExists = sh(script: "aws cloudformation describe-stacks --stack-name $STACK_NAME --region $AWS_DEFAULT_REGION", returnStatus: true)
-                    if (stackExists == 0) {
-                        echo "Deleting existing stack..."
-                        sh "aws cloudformation delete-stack --stack-name $STACK_NAME --region $AWS_DEFAULT_REGION"
-                        sh "aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region $AWS_DEFAULT_REGION"
-                        echo "Existing stack deleted."
-                    } else {
-                        echo "No existing stack found."
-                    }
-                }
-            }
-        }
         stage('Deploy CloudFormation Stack') {
             steps {
                 script {
-                    sh """
-                    aws cloudformation create-stack \
-                        --stack-name $STACK_NAME \
-                        --template-body file://cloudformation/lambda-secret-srv.yaml \
-                        --parameters ParameterKey=SecretUsername,ParameterValue=$SECRET_USERNAME \
-                        --region $AWS_DEFAULT_REGION \
-                        --capabilities CAPABILITY_IAM
-                    """
+                    def stackExists = sh(script: "aws cloudformation describe-stacks --stack-name $STACK_NAME --region $AWS_DEFAULT_REGION", returnStatus: true)
+                    if (stackExists == 0) {
+                        echo "Updating existing stack..."
+                        sh """
+                        aws cloudformation update-stack \
+                            --stack-name $STACK_NAME \
+                            --template-body file://cloudformation/lambda-secret-srv.yaml \
+                            --parameters ParameterKey=SecretUsername,ParameterValue=$SECRET_USERNAME \
+                            --region $AWS_DEFAULT_REGION \
+                            --capabilities CAPABILITY_IAM
+                        """
+                    } else {
+                        echo "Creating new stack..."
+                        sh """
+                        aws cloudformation create-stack \
+                            --stack-name $STACK_NAME \
+                            --template-body file://cloudformation/lambda-secret-srv.yaml \
+                            --parameters ParameterKey=SecretUsername,ParameterValue=$SECRET_USERNAME \
+                            --region $AWS_DEFAULT_REGION \
+                            --capabilities CAPABILITY_IAM
+                        """
+                    }
                 }
             }
         }
