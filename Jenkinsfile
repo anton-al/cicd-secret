@@ -30,25 +30,24 @@ pipeline {
             }
         }
         stage('Delete Existing Stack') {
-                    steps {
-                        script {
+            steps {
+                script {
 
-                            def stackExists = sh(script: "aws cloudformation describe-stacks --stack-name $STACK_NAME --region $AWS_DEFAULT_REGION", returnStatus: true)
-                            if (stackExists == 0) {
-                                echo "Deleting existing stack..."
-                                sh "aws cloudformation delete-stack --stack-name $STACK_NAME --region $AWS_DEFAULT_REGION"
-                                sh "aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region $AWS_DEFAULT_REGION"
-                                echo "Existing stack deleted."
-                            } else {
-                                echo "No existing stack found."
-                            }
-                        }
+                    def stackExists = sh(script: "aws cloudformation describe-stacks --stack-name $STACK_NAME --region $AWS_DEFAULT_REGION", returnStatus: true)
+                    if (stackExists == 0) {
+                        echo "Deleting existing stack..."
+                        sh "aws cloudformation delete-stack --stack-name $STACK_NAME --region $AWS_DEFAULT_REGION"
+                        sh "aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region $AWS_DEFAULT_REGION"
+                        echo "Existing stack deleted."
+                    } else {
+                        echo "No existing stack found."
                     }
                 }
+            }
+        }
         stage('Deploy CloudFormation Stack') {
             steps {
                 script {
-                    sh "aws cloudformation delete-stack --stack-name $STACK_NAME --region $AWS_DEFAULT_REGION"
                     sh """
                     aws cloudformation create-stack \
                         --stack-name $STACK_NAME \
