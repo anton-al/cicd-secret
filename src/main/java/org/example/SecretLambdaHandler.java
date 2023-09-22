@@ -2,34 +2,47 @@ package org.example;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
-import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
-import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import software.amazon.awssdk.services.secretsmanager.model.SecretsManagerException;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 public class SecretLambdaHandler implements RequestHandler<Object, Object> {
     private static final Logger logger = LoggerFactory.getLogger(SecretLambdaHandler.class);
 
     @Override
     public Object handleRequest(Object input, Context context) {
-        SecretsManagerClient secretsManagerClient = SecretsManagerClient.builder().build();
         String secretName = System.getenv("SECRET_NAME");
+        String sessionToken = System.getenv("AWS_SESSION_TOKEN");
 
         try {
-            GetSecretValueRequest getSecretValueRequest = GetSecretValueRequest.builder()
-                    .secretId(secretName)
+            // Get the secret with Secrets Lambda Extension
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI("http://localhost:2773/secretsmanager/get?secretId=" + secretName))
+                    .headers("X-Aws-Parameters-Secrets-Token", sessionToken)
+                    .GET()
                     .build();
+            HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            String secretString = response.body();
 
-            GetSecretValueResponse secretValueResponse = secretsManagerClient.getSecretValue(getSecretValueRequest);
-            String secretString = secretValueResponse.secretString();
+
+            // Get the secret with AWS SDK 2
+//            SecretsManagerClient secretsManagerClient = SecretsManagerClient.builder().build();
+//            GetSecretValueRequest getSecretValueRequest = GetSecretValueRequest.builder()
+//                    .secretId(secretName)
+//                    .build();
+//
+//            GetSecretValueResponse secretValueResponse = secretsManagerClient.getSecretValue(getSecretValueRequest);
+//            String secretString = secretValueResponse.secretString();
 
             logger.info("Username and password successfully retrieved.");
             logger.info(secretString);
 
-        } catch (SecretsManagerException e) {
+        } catch (Exception e) {
             logger.error("Error accessing secret: " + e.getMessage());
         }
 
