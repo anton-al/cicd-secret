@@ -32,7 +32,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                    aws cloudformation create-stack \
+                    aws cloudformation update-stack \
                         --stack-name SecretsTestStack \
                         --template-body file://cloudformation/lambda-secret-srv.yaml \
                         --parameters ParameterKey=SecretName,ParameterValue=$SECRET_NAME \
