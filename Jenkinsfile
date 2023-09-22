@@ -31,8 +31,9 @@ pipeline {
         stage('Deploy CloudFormation Stack') {
             steps {
                 script {
+                    sh "aws cloudformation delete-stack --stack-name SecretsTestStack --region $AWS_DEFAULT_REGION"
                     sh """
-                    aws cloudformation update-stack \
+                    aws cloudformation create-stack \
                         --stack-name SecretsTestStack \
                         --template-body file://cloudformation/lambda-secret-srv.yaml \
                         --parameters ParameterKey=SecretName,ParameterValue=$SECRET_NAME \
