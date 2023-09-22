@@ -27,6 +27,7 @@ public class SecretLambdaHandler implements RequestHandler<Object, Object> {
                     .uri(new URI("http://localhost:2773/secretsmanager/get?secretId="
                             + URLEncoder.encode(secretName, StandardCharsets.UTF_8)))
                     .header("X-Aws-Parameters-Secrets-Token", sessionToken)
+                    .version(HttpClient.Version.HTTP_1_1)
                     .GET()
                     .build();
             HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
