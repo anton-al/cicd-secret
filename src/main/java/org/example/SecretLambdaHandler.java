@@ -1,5 +1,7 @@
 package org.example;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
@@ -9,6 +11,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import software.amazon.awssdk.services.secretsmanager.model.SecretsManagerException;
 
 public class SecretLambdaHandler implements RequestHandler<Object, Object> {
+    private static final Logger logger = LoggerFactory.getLogger(SecretLambdaHandler.class);
 
     @Override
     public Object handleRequest(Object input, Context context) {
@@ -23,11 +26,11 @@ public class SecretLambdaHandler implements RequestHandler<Object, Object> {
             GetSecretValueResponse secretValueResponse = secretsManagerClient.getSecretValue(getSecretValueRequest);
             String secretString = secretValueResponse.secretString();
 
-            System.out.println("Username and password successfully retrieved.");
-            System.out.println(secretString);
+            logger.info("Username and password successfully retrieved.");
+            logger.info(secretString);
 
         } catch (SecretsManagerException e) {
-            System.err.println("Error accessing secret: " + e.getMessage());
+            logger.error("Error accessing secret: " + e.getMessage());
         }
 
         return null;
