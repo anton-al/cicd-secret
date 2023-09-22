@@ -7,9 +7,11 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 
 public class SecretLambdaHandler implements RequestHandler<Object, Object> {
     private static final Logger logger = LoggerFactory.getLogger(SecretLambdaHandler.class);
@@ -22,7 +24,8 @@ public class SecretLambdaHandler implements RequestHandler<Object, Object> {
         try {
             // Get the secret with Secrets Lambda Extension
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI("http://localhost:2773/secretsmanager/get?secretId=" + secretName))
+                    .uri(new URI("http://localhost:2773/secretsmanager/get?secretId="
+                            + URLEncoder.encode(secretName, StandardCharsets.UTF_8)))
                     .headers("X-Aws-Parameters-Secrets-Token", sessionToken)
                     .GET()
                     .build();
