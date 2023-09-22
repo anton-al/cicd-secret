@@ -20,16 +20,18 @@ public class SecretLambdaHandler implements RequestHandler<Object, Object> {
     public Object handleRequest(Object input, Context context) {
         String secretName = System.getenv("SECRET_NAME");
         String sessionToken = System.getenv("AWS_SESSION_TOKEN");
+        logger.info("Session token: " + sessionToken);
 
         try {
             // Get the secret with Secrets Lambda Extension
             HttpRequest request = HttpRequest.newBuilder()
+                    .version(HttpClient.Version.HTTP_1_1)
                     .uri(new URI("http://localhost:2773/secretsmanager/get?secretId="
                             + URLEncoder.encode(secretName, StandardCharsets.UTF_8)))
-                    .header("X-Aws-Parameters-Secrets-Token", sessionToken)
-                    .version(HttpClient.Version.HTTP_1_1)
+                    .setHeader("X-Aws-Parameters-Secrets-Token", sessionToken)
                     .GET()
                     .build();
+
             HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
             String secretString = response.body();
 
