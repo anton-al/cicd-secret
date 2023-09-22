@@ -28,25 +28,17 @@ pipeline {
                 }
             }
         }
-        stage('Deploy Lambda') {
+        stage('Deploy CloudFormation Stack') {
             steps {
                 script {
-                    def stackName = 'secrets-test-stack'
-                    def cfnTemplate = readFile 'cloudformation/lambda-secret-srv.yaml'
-                    def params = [
-                        [name: 'SecretName', value: SECRET_NAME]
-                    ]
-                    awsCloudFormation(
-                        role: 'arn:aws:iam::800099700786:role/JenkinsRole',
-                        region: AWS_DEFAULT_REGION,
-                        createStack: true,
-                        stackName: stackName,
-                        templateBody: cfnTemplate,
-                        capabilities: 'CAPABILITY_IAM',
-                        params: params
-                    )
+                    sh """
+                    aws cloudformation create-stack \
+                        --stack-name SecretsTestStack \
+                        --template-body file://cloudformation/lambda-secret-srv.yaml \
+                        --parameters ParameterKey=SecretName,ParameterValue=$SECRET_NAME \
+                        --region $AWS_DEFAULT_REGION
+                    """
                 }
             }
-        }
     }
 }
