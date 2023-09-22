@@ -7,7 +7,7 @@ pipeline {
         STACK_NAME = 'SecretsTestStack'
         AWS_DEFAULT_REGION = 'us-east-1'
         S3_BUCKET_NAME = 'artifacbucket'
-        SECRET_NAME = 'rds!cluster-13c5457e-746e-4ca0-a576-23facf8e6367'
+        SECRET_NAME = 'rds!cluster-13c5457e-746e-4ca0-a576-23facf8e6367-XML9hr'
     }
     stages {
         stage('Checkout') {
