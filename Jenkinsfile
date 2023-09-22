@@ -36,7 +36,8 @@ pipeline {
                         --stack-name SecretsTestStack \
                         --template-body file://cloudformation/lambda-secret-srv.yaml \
                         --parameters ParameterKey=SecretName,ParameterValue=$SECRET_NAME \
-                        --region $AWS_DEFAULT_REGION
+                        --region $AWS_DEFAULT_REGION \
+                        --capabilities CAPABILITY_IAM
                     """
                 }
             }
