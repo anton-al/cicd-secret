@@ -1,0 +1,12 @@
+{
+  "ARN": "arn:aws:secretsmanager:us-east-1:ACCOUNT_ID:secret:MyDBCredentials-c3a906-RvobQD",
+  "CreatedDate": "2023-09-22T15:19:41.533Z",
+  "Name": "MyDBCredentials-c3a906",
+  "SecretBinary": null,
+  "SecretString": "{\"password\":\"A5MEg(AH!eWR;o1q\u00262yRW*w?~aii=?\",\"username\":\"AdminTest\"}",
+  "VersionId": "3b855075-9c6e-2190-67c0-f6b7ac316b63",
+  "VersionStages": [
+    "AWSCURRENT"
+  ],
+  "ResultMetadata": {}
+}
